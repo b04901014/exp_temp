@@ -41,7 +41,7 @@ if not hp.train.use_myreader:
                                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
                                            noise_adder,
                                        ]))
-        hp.dataset.data, _ = torch.utils.data.random_split(hp.dataset.data, [5000, 45000])
+#        hp.dataset.data, _ = torch.utils.data.random_split(hp.dataset.data, [5000, 45000])
         hp.dataset.nchannel=3
 
 class buff():

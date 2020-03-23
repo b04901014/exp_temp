@@ -71,15 +71,14 @@ class Improver_res(nn.Module):
     def __init__(self):
         super(Improver_res, self).__init__()
         self.dim = dim = 64
-        self.r1 = ResBlock_imp(3, dim//2, downsamp=True, first=True)
-        self.r2 = ResBlock_imp(dim//2, dim, downsamp=True)
-        for i in range(5):
+        self.r1 = ResBlock_imp(3, dim, downsamp=True, first=True)
+        self.r2 = ResBlock_imp(dim, dim, downsamp=True)
+        for i in range(2):
             self.__setattr__(
                                 'res'+str(i+1),
                                 ResBlock_imp(dim, dim)
                             )
-        self.r3 = ResBlock_imp(dim, dim*4, downsamp=True)
-        self.fc = nn.Linear(dim*4, 1, bias=False)
+        self.fc = nn.Linear(dim, 1, bias=False)
         if hp.train.spnorm:
             self.fc = nn.utils.spectral_norm(self.fc)
         self.func = MyAct.apply
@@ -96,14 +95,11 @@ class Improver_res(nn.Module):
         x = inputs
         x = self.r1(x)
         x = self.r2(x)
-#        l = x
-        for i in range(5):
+        for i in range(2):
             x = self.__getattr__('res'+str(i+1))(x)
-#            l = l + self.func(x)
-        x = self.r3(x)
         x = self.func(x)
         x = x.sum((2, 3))
-        x = self.fc(x.view(x.size(0), self.dim*4))
+        x = self.fc(x.view(x.size(0), self.dim))
         raw = x
         x = autograd.grad(outputs=x,
                           inputs=inputs,
@@ -126,11 +122,6 @@ class Generator_res(nn.Module):
         self.dim = dim = 64
         self.fc = nn.Linear(128, 4 * 4 * dim)
         self.r1 = ResBlock_gen(dim, dim)
-        for i in range(5):
-            self.__setattr__(
-                                'res1_'+str(i+1),
-                                ResBlock_gen(dim, dim, upsample=False)
-                            )
         self.r2 = ResBlock_gen(dim, dim)
         self.r3 = ResBlock_gen(dim, dim)
         self.conv = nn.Conv2d(dim, 3, kernel_size=3, stride=1, padding=1)
@@ -153,8 +144,6 @@ class Generator_res(nn.Module):
         x = self.fc(noise.view(noise.size(0), -1))
         x = x.view(-1, self.dim, 4, 4)
         x = self.r1(x)
-        for i in range(5):
-            x = self.__getattr__('res1_'+str(i+1))(x)
         x = self.r2(x)
         x = self.r3(x)
         x = self.conv(F.relu(self.bn(x)))

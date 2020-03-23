@@ -42,11 +42,8 @@ class MyAct(autograd.Function):
     @staticmethod
     def backward(ctx, grad_output):
         input, mask, = ctx.saved_tensors
-#        print (mask.mean().item(), mask.std(0).mean(0).mean(0).mean(0).item())
         grad_input = grad_output#.clone()
-#        grad_input = 0.5 * (grad_input + input)
         grad_input = grad_input * mask# + 0.1 * grad_input * (1 - mask)
-#        grad_input = F.dropout(grad_input, p=0.2, training=True)
         return grad_input, None
 
 class conv2d_gi(autograd.Function):

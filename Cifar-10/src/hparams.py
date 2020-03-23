@@ -16,10 +16,10 @@ hp.fid_batch_size = 100
 #Model
 hp.md = HParams()
 hp.md.imp = HParams()
-hp.md.imp.channels = np.array([64, 64, 64, 64, 64, 64, 64, 64, 64, 128, 1])
-hp.md.imp.filters = np.array([3, 3, 4, 3, 3, 4, 3, 3, 4, 3, 4])
-hp.md.imp.strides = np.array([1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1])
-hp.md.imp.pads = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0])
+hp.md.imp.channels = np.array([64, 64, 128, 128, 256, 256, 512, 1])
+hp.md.imp.filters = np.array([3, 4, 3, 4, 3, 4, 3, 4])
+hp.md.imp.strides = np.array([1, 2, 1, 2, 1, 2, 1, 1])
+hp.md.imp.pads = np.array([1, 1, 1, 1, 1, 1, 1, 0])
 hp.md.imp.with_bias = False
 
 #hp.md.imp.channels = np.array([32, 64, 128, 256, 512, 1])
